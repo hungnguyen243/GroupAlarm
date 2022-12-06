@@ -1,10 +1,13 @@
 package com.example.groupalarm
 
+import android.app.AlarmManager
+import android.app.PendingIntent
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TimePicker
 import android.widget.Toast
 import com.example.groupalarm.data.User
 import com.example.groupalarm.databinding.FragmentRegisterBinding
@@ -23,6 +26,10 @@ private const val ARG_PARAM2 = "param2"
  */
 class RegisterFragment : Fragment() {
     lateinit var binding: FragmentRegisterBinding
+
+    lateinit var timePicker: TimePicker
+    lateinit var pendingIntent: PendingIntent
+    lateinit var alarmManager: AlarmManager
 
     companion object {
         @JvmStatic
@@ -59,7 +66,7 @@ class RegisterFragment : Fragment() {
                     binding.etUsername.text.toString(),
                     FirebaseAuth.getInstance().currentUser!!.email!!,
                 )
-                usersCollection.add(newUser)
+                usersCollection.document(FirebaseAuth.getInstance().currentUser!!.email!!).set(newUser)
 
                 Toast.makeText(
                     requireActivity(),
