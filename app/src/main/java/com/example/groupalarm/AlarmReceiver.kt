@@ -13,6 +13,7 @@ class AlarmReceiver: BroadcastReceiver(){
         // we will use vibrator first
         // we will use vibrator first
 
+        System.out.println("ALARM WAKE UP")
         Toast.makeText(context, "Alarm! Wake up! Wake up!", Toast.LENGTH_LONG).show()
         var alarmUri: Uri? = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM)
         if (alarmUri == null) {

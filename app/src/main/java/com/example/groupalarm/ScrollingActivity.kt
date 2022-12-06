@@ -2,22 +2,18 @@ package com.example.groupalarm
 
 import android.app.AlarmManager
 import android.app.PendingIntent
+import android.app.PendingIntent.FLAG_MUTABLE
 import android.content.Intent
 import android.os.Bundle
-import com.google.android.material.appbar.CollapsingToolbarLayout
-import com.google.android.material.floatingactionbutton.FloatingActionButton
-import com.google.android.material.snackbar.Snackbar
-import androidx.appcompat.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.TimePicker
+import androidx.appcompat.app.AppCompatActivity
 import com.example.groupalarm.data.Alarm
-import com.example.groupalarm.data.User
 import com.example.groupalarm.databinding.ActivityScrollingBinding
 import com.example.groupalarm.dialog.AlarmDialog
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.ktx.toObject
 
 class ScrollingActivity : AppCompatActivity() {
 
@@ -46,29 +42,52 @@ class ScrollingActivity : AppCompatActivity() {
             itemDialog.show(supportFragmentManager, "Add an Alarm")
         }
 
+        alarmManager = getSystemService(ALARM_SERVICE) as AlarmManager
+
         alarmDb = FirebaseFirestore.getInstance().collection(COLLECTION_ALARMS)
-        setAlarms()
+        getAllAlarms()
     }
 
-    private fun getAllAlarms(): List<Alarm> {
+//    override fun onResume() {
+//        super.onResume()
+//    }
+
+    private fun getAllAlarms() {
         var alarms: List<Alarm> = ArrayList()
         alarmDb.get().addOnSuccessListener {
             documents->
-            alarms = documents.map { doc -> doc.toObject<Alarm>() }
+            alarms = documents.map { doc -> doc.toObject(Alarm::class.java) }
+            for (alarm in alarms) {
+                // set Alarms
+//                pendingIntent = Intent(this, AlarmReceiver::class.java).let { intent ->
+//                    PendingIntent.getBroadcast(this, 0, intent, FLAG_IMMUTABLE)
+//                }
+                val intent = Intent(this, AlarmReceiver::class.java)
+
+                // we call broadcast using pendingIntent
+
+                // we call broadcast using pendingIntent
+                pendingIntent = PendingIntent.getBroadcast(this, 0, intent, FLAG_MUTABLE)
+
+                System.out.println("TIME set up" + alarm.time)
+                alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, alarm.time, 10000, pendingIntent);
+            }
+        }.addOnFailureListener {
+            System.out.println("FAILED getting alarms")
         }
-        return alarms
     }
 
-    fun setAlarms() {
-        var allAlarms: List<Alarm> = getAllAlarms()
-        for (alarm in allAlarms) {
-            // set Alarms
-            pendingIntent = Intent(this, AlarmReceiver::class.java).let { intent ->
-                PendingIntent.getBroadcast(this, 0, intent, 0)
-            }
-            alarmManager.setExact(AlarmManager.RTC_WAKEUP, alarm.time, pendingIntent);
-        }
-    }
+//    fun setAlarms() {
+//        var allAlarms: List<Alarm> = getAllAlarms()
+//        for (alarm in allAlarms) {
+//            // set Alarms
+//            pendingIntent = Intent(this, AlarmReceiver::class.java).let { intent ->
+//                PendingIntent.getBroadcast(this, 0, intent, 0)
+//            }
+//            System.out.println("TIME set up" + alarm.time)
+//            alarmManager.setExact(AlarmManager.RTC_WAKEUP, alarm.time, pendingIntent);
+//        }
+//    }
 
 
 

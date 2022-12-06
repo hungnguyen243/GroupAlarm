@@ -25,9 +25,7 @@ import kotlin.collections.ArrayList
 
 class AlarmDialog: DialogFragment() {
 
-    lateinit var timePicker: TimePicker
     lateinit var pendingIntent: PendingIntent
-    lateinit var alarmManager: AlarmManager
 
     lateinit var dialogViewBinding: AlarmDialogBinding
 
@@ -42,7 +40,7 @@ class AlarmDialog: DialogFragment() {
         dialogViewBinding = AlarmDialogBinding.inflate(requireActivity().layoutInflater)
         dialogBuilder.setView(dialogViewBinding.root)
 
-        alarmManager = requireActivity().getSystemService(ALARM_SERVICE) as AlarmManager;
+        var timePicker = dialogViewBinding.timePicker
 
         dialogBuilder.setPositiveButton(getString(R.string.confirm_btn)) {
                 dialog, which ->
@@ -72,7 +70,8 @@ class AlarmDialog: DialogFragment() {
             FirebaseFirestore.getInstance().collection(RegisterFragment.COLLECTION_USERS)
             .document(currUserEmail).get().
             addOnSuccessListener { documentSnapshot ->
-                val user = documentSnapshot.toObject<User>()
+                val user = documentSnapshot.toObject(User::class.java)
+                System.out.println("USER NAME " +user!!.username)
                 val newAlarm = Alarm(
                     time,
                     dialogViewBinding.toggleButton.isChecked,
