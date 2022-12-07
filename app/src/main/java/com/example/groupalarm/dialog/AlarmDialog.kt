@@ -71,7 +71,7 @@ class AlarmDialog: DialogFragment() {
             .document(currUserEmail).get().
             addOnSuccessListener { documentSnapshot ->
                 val user = documentSnapshot.toObject(User::class.java)
-                System.out.println("USER NAME " +user!!.username)
+
                 val newAlarm = Alarm(
                     "alarm title",
                     time,

@@ -88,17 +88,14 @@ class ScrollingActivity : AppCompatActivity() {
                 for (docChange in querySnapshot?.getDocumentChanges()!!) {
                     if (docChange.type == DocumentChange.Type.ADDED) {
                         val alarm = docChange.document.toObject(Alarm::class.java)
-                        if (Date(alarm.time) < Calendar.getInstance().time) {
-                            return
-                        }
                         val intent = Intent(applicationContext, AlarmReceiver::class.java)
                         intent.putExtra(ALARM_REQUEST_CODE, alarm.time.toInt())
                         pendingIntent = PendingIntent.getBroadcast(applicationContext, alarm.time.toInt(), intent, FLAG_IMMUTABLE or FLAG_UPDATE_CURRENT)
                         alarmManager.setExact(AlarmManager.RTC_WAKEUP, alarm.time, pendingIntent);
-
-
+                        adapter.addAlarm(alarm, docChange.document.id)
 
                     } else if (docChange.type == DocumentChange.Type.REMOVED) {
+
                     } else if (docChange.type == DocumentChange.Type.MODIFIED) {
 
                     }
@@ -170,6 +167,7 @@ class ScrollingActivity : AppCompatActivity() {
             else -> super.onOptionsItemSelected(item)
         }
     }
+
     fun queryPosts() {
         val queryPosts = FirebaseFirestore.getInstance().collection(
             COLLECTION_ALARMS
