@@ -65,8 +65,10 @@ class ScrollingActivity : AppCompatActivity() {
         )
 
         val eventListener = object : EventListener<QuerySnapshot> {
-            override fun onEvent(querySnapshot: QuerySnapshot?,
-                                 e: FirebaseFirestoreException?) {
+            override fun onEvent(
+                querySnapshot: QuerySnapshot?,
+                e: FirebaseFirestoreException?
+            ) {
                 if (e != null) {
                     Toast.makeText(
                         this@ScrollingActivity, "Error: ${e.message}",
@@ -86,5 +88,7 @@ class ScrollingActivity : AppCompatActivity() {
                     }
                 }
             }
+        }
+        queryPosts.addSnapshotListener(eventListener)
     }
 }
