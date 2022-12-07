@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.example.groupalarm.ScrollingActivity
 import com.example.groupalarm.databinding.PostRowBinding
 import com.google.firebase.firestore.FirebaseFirestore
 import com.example.groupalarm.data.Alarm
@@ -47,7 +48,7 @@ class AlarmAdapter : RecyclerView.Adapter<AlarmAdapter.ViewHolder> {
     // when I remove the post object
     private fun removePost(index: Int) {
         FirebaseFirestore.getInstance().collection(
-            CreatePostActivity.COLLECTION_ALARMS).document(
+            ScrollingActivity.COLLECTION_ALARMS).document(
             alarmKeys[index]
         ).delete()
 

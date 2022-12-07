@@ -61,7 +61,7 @@ class ScrollingActivity : AppCompatActivity() {
     }
     fun queryPosts() {
         val queryPosts = FirebaseFirestore.getInstance().collection(
-            CreatePostActivity.COLLECTION_ALARMS
+            COLLECTION_ALARMS
         )
 
         val eventListener = object : EventListener<QuerySnapshot> {
