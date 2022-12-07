@@ -1,11 +1,13 @@
 package com.example.groupalarm
 
 import android.app.AlarmManager
+import android.app.KeyguardManager
 import android.app.PendingIntent
-import android.app.PendingIntent.FLAG_IMMUTABLE
-import android.app.PendingIntent.FLAG_MUTABLE
 import android.content.Intent
-import android.os.Bundle
+import android.media.RingtoneManager
+import android.net.Uri
+import android.os.*
+import android.view.WindowManager
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.groupalarm.ScrollingActivity.Companion.ALARM_REQUEST_CODE
@@ -21,21 +23,33 @@ class StopAlarmActivity : AppCompatActivity() {
         binding = ActivityStopAlarmBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // Stop alarm
+        var alarmUri: Uri? = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM)
+        if (alarmUri == null) {
+            alarmUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
+        }
+
+        // setting default ringtone
+        val ringtone = RingtoneManager.getRingtone(this, alarmUri)
+
+        // play ringtone
+        ringtone.play()
+
+        // STOP ALARM
         binding.btnStopAlarm.setOnClickListener {
             val alarmRequestCode = intent.getIntExtra(ALARM_REQUEST_CODE, 0)
             val newIntent = Intent(applicationContext, AlarmReceiver::class.java)
-            newIntent.setAction("ABCDE")
             val pendingIntent = PendingIntent.getBroadcast(applicationContext, alarmRequestCode, newIntent, PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT)
 
-            val alarmManager = applicationContext.getSystemService(ALARM_SERVICE) as AlarmManager
+            val alarmManager = getSystemService(ALARM_SERVICE) as AlarmManager
             alarmManager.cancel(pendingIntent)
-            Toast.makeText(this, "caneled alarm", Toast.LENGTH_LONG).show()
+            Toast.makeText(this, "Alarm turned off", Toast.LENGTH_LONG).show()
+            ringtone.stop()
         }
 
         // Bring user back to app
         binding.btnBackToApp.setOnClickListener {
             startActivity(Intent(this, MainActivity::class.java))
         }
+
     }
 }

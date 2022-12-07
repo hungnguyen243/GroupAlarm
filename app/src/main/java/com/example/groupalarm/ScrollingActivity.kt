@@ -25,7 +25,6 @@ import java.util.*
 class ScrollingActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityScrollingBinding
-    lateinit var timePicker: TimePicker
     lateinit var pendingIntent: PendingIntent
     lateinit var alarmManager: AlarmManager
 
@@ -33,13 +32,12 @@ class ScrollingActivity : AppCompatActivity() {
         const val COLLECTION_ALARMS = "alarms"
         const val ALARM_REQUEST_CODE = "alarmRequestCode"
     }
+
     lateinit var alarmDb: CollectionReference
     lateinit var listener: ListenerRegistration
 
 
     private lateinit var adapter: AlarmAdapter
-
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -63,7 +61,6 @@ class ScrollingActivity : AppCompatActivity() {
 
         alarmManager = applicationContext.getSystemService(ALARM_SERVICE) as AlarmManager
 
-        alarmDb = FirebaseFirestore.getInstance().collection(COLLECTION_ALARMS)
         getAllAlarms()
 
         binding.btnRefreshAlarms.setOnClickListener {
@@ -72,8 +69,7 @@ class ScrollingActivity : AppCompatActivity() {
     }
 
     private fun getAllAlarms() {
-
-
+        alarmDb = FirebaseFirestore.getInstance().collection(COLLECTION_ALARMS)
         val eventListener = object : EventListener<QuerySnapshot> {
             override fun onEvent(querySnapshot: QuerySnapshot?,
                                  e: FirebaseFirestoreException?) {
@@ -88,13 +84,15 @@ class ScrollingActivity : AppCompatActivity() {
                 for (docChange in querySnapshot?.getDocumentChanges()!!) {
                     if (docChange.type == DocumentChange.Type.ADDED) {
                         val alarm = docChange.document.toObject(Alarm::class.java)
-                        adapter.addAlarm(alarm, docChange.document.id)
 
+                        // Currently only display & fire off alarms that are set after current system time
                         if (Date(alarm.time) < Calendar.getInstance().time) {
                             return
                         }
-                        val intent = Intent(applicationContext, AlarmReceiver::class.java)
 
+                        // SET ALARM
+                        adapter.addAlarm(alarm, docChange.document.id)
+                        val intent = Intent(this@ScrollingActivity, AlarmReceiver::class.java)
 
                         intent.putExtra(ALARM_REQUEST_CODE, alarm.time.toInt())
                         pendingIntent = PendingIntent.getBroadcast(applicationContext, alarm.time.toInt(), intent, FLAG_IMMUTABLE or FLAG_UPDATE_CURRENT)
@@ -108,54 +106,13 @@ class ScrollingActivity : AppCompatActivity() {
                 }
             }
         }
-
-
         listener = alarmDb.addSnapshotListener(eventListener)
-
-//        alarmDb.get().addOnSuccessListener {
-//            documents ->
-//            if (e != null) {
-//                Log.w(TAG, "Listen failed.", e)
-//                return@addSnapshotListener
-//            }
-//            System.out.println("ADDED new alarm")
-//            var alarms = documents!!.map { doc -> doc.toObject(Alarm::class.java) }
-//            System.out.println("SIZE ALARM " + alarms.size)
-//            for (alarm in alarms) {
-//                val intent = Intent(this, AlarmReceiver::class.java)
-//
-//                // we call broadcast using pendingIntent
-//
-//                // we call broadcast using pendingIntent
-//                pendingIntent = PendingIntent.getBroadcast(this, 0, intent, FLAG_MUTABLE)
-//
-//                System.out.println("TIME set up" + Date(alarm.time).toString())
-//                alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, alarm.time, 10000, pendingIntent);
-//            }
-//        }
-
-
     }
 
     override fun onDestroy() {
         super.onDestroy()
         listener.remove()
     }
-
-//    fun setAlarms() {
-//        var allAlarms: List<Alarm> = getAllAlarms()
-//        for (alarm in allAlarms) {
-//            // set Alarms
-//            pendingIntent = Intent(this, AlarmReceiver::class.java).let { intent ->
-//                PendingIntent.getBroadcast(this, 0, intent, 0)
-//            }
-//            System.out.println("TIME set up" + alarm.time)
-//            alarmManager.setExact(AlarmManager.RTC_WAKEUP, alarm.time, pendingIntent);
-//        }
-//    }
-
-
-
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -172,38 +129,5 @@ class ScrollingActivity : AppCompatActivity() {
             R.id.action_settings -> true
             else -> super.onOptionsItemSelected(item)
         }
-    }
-
-    fun queryPosts() {
-        val queryPosts = FirebaseFirestore.getInstance().collection(
-            COLLECTION_ALARMS
-        )
-
-        val eventListener = object : EventListener<QuerySnapshot> {
-            override fun onEvent(
-                querySnapshot: QuerySnapshot?,
-                e: FirebaseFirestoreException?
-            ) {
-                if (e != null) {
-                    Toast.makeText(
-                        this@ScrollingActivity, "Error: ${e.message}",
-                        Toast.LENGTH_LONG
-                    ).show()
-                    return
-                }
-
-                for (docChange in querySnapshot?.getDocumentChanges()!!) {
-                    if (docChange.type == DocumentChange.Type.ADDED) {
-                        val post = docChange.document.toObject(Alarm::class.java)
-                        adapter.addAlarm(post, docChange.document.id)
-                    } else if (docChange.type == DocumentChange.Type.REMOVED) {
-                        adapter.removePostByKey(docChange.document.id)
-                    } else if (docChange.type == DocumentChange.Type.MODIFIED) {
-
-                    }
-                }
-            }
-        }
-        queryPosts.addSnapshotListener(eventListener)
     }
 }
