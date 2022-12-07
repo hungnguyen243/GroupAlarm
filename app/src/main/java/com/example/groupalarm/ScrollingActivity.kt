@@ -2,18 +2,23 @@ package com.example.groupalarm
 
 import android.app.AlarmManager
 import android.app.PendingIntent
-import android.app.PendingIntent.FLAG_MUTABLE
+import android.app.PendingIntent.*
+import android.content.ContentValues.TAG
 import android.content.Intent
+import android.content.IntentFilter
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.TimePicker
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.groupalarm.data.Alarm
 import com.example.groupalarm.databinding.ActivityScrollingBinding
 import com.example.groupalarm.dialog.AlarmDialog
-import com.google.firebase.firestore.CollectionReference
-import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.*
+import com.google.firebase.firestore.EventListener
+import java.util.*
 
 class ScrollingActivity : AppCompatActivity() {
 
@@ -24,8 +29,10 @@ class ScrollingActivity : AppCompatActivity() {
 
     companion object {
         const val COLLECTION_ALARMS = "alarms"
+        const val ALARM_REQUEST_CODE = "alarmRequestCode"
     }
     lateinit var alarmDb: CollectionReference
+    lateinit var listener: ListenerRegistration
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -42,39 +49,81 @@ class ScrollingActivity : AppCompatActivity() {
             itemDialog.show(supportFragmentManager, "Add an Alarm")
         }
 
-        alarmManager = getSystemService(ALARM_SERVICE) as AlarmManager
+        alarmManager = applicationContext.getSystemService(ALARM_SERVICE) as AlarmManager
 
         alarmDb = FirebaseFirestore.getInstance().collection(COLLECTION_ALARMS)
         getAllAlarms()
+
+        binding.btnRefreshAlarms.setOnClickListener {
+            getAllAlarms()
+        }
     }
 
-//    override fun onResume() {
-//        super.onResume()
-//    }
-
     private fun getAllAlarms() {
-        var alarms: List<Alarm> = ArrayList()
-        alarmDb.get().addOnSuccessListener {
-            documents->
-            alarms = documents.map { doc -> doc.toObject(Alarm::class.java) }
-            for (alarm in alarms) {
-                // set Alarms
-//                pendingIntent = Intent(this, AlarmReceiver::class.java).let { intent ->
-//                    PendingIntent.getBroadcast(this, 0, intent, FLAG_IMMUTABLE)
-//                }
-                val intent = Intent(this, AlarmReceiver::class.java)
 
-                // we call broadcast using pendingIntent
 
-                // we call broadcast using pendingIntent
-                pendingIntent = PendingIntent.getBroadcast(this, 0, intent, FLAG_MUTABLE)
+        val eventListener = object : EventListener<QuerySnapshot> {
+            override fun onEvent(querySnapshot: QuerySnapshot?,
+                                 e: FirebaseFirestoreException?) {
+                if (e != null) {
+                    Toast.makeText(
+                        this@ScrollingActivity, "Error: ${e.message}",
+                        Toast.LENGTH_LONG
+                    ).show()
+                    return
+                }
 
-                System.out.println("TIME set up" + alarm.time)
-                alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, alarm.time, 10000, pendingIntent);
+                for (docChange in querySnapshot?.getDocumentChanges()!!) {
+                    if (docChange.type == DocumentChange.Type.ADDED) {
+                        val alarm = docChange.document.toObject(Alarm::class.java)
+                        if (Date(alarm.time) < Calendar.getInstance().time) {
+                            return
+                        }
+                        val intent = Intent(applicationContext, AlarmReceiver::class.java)
+                        intent.putExtra(ALARM_REQUEST_CODE, alarm.time.toInt())
+                        pendingIntent = PendingIntent.getBroadcast(applicationContext, alarm.time.toInt(), intent, FLAG_IMMUTABLE or FLAG_UPDATE_CURRENT)
+                        alarmManager.setExact(AlarmManager.RTC_WAKEUP, alarm.time, pendingIntent);
+
+
+
+                    } else if (docChange.type == DocumentChange.Type.REMOVED) {
+                    } else if (docChange.type == DocumentChange.Type.MODIFIED) {
+
+                    }
+                }
             }
-        }.addOnFailureListener {
-            System.out.println("FAILED getting alarms")
         }
+
+        listener = alarmDb.addSnapshotListener(eventListener)
+
+//        alarmDb.get().addOnSuccessListener {
+//            documents ->
+//            if (e != null) {
+//                Log.w(TAG, "Listen failed.", e)
+//                return@addSnapshotListener
+//            }
+//            System.out.println("ADDED new alarm")
+//            var alarms = documents!!.map { doc -> doc.toObject(Alarm::class.java) }
+//            System.out.println("SIZE ALARM " + alarms.size)
+//            for (alarm in alarms) {
+//                val intent = Intent(this, AlarmReceiver::class.java)
+//
+//                // we call broadcast using pendingIntent
+//
+//                // we call broadcast using pendingIntent
+//                pendingIntent = PendingIntent.getBroadcast(this, 0, intent, FLAG_MUTABLE)
+//
+//                System.out.println("TIME set up" + Date(alarm.time).toString())
+//                alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, alarm.time, 10000, pendingIntent);
+//            }
+//        }
+
+
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        listener.remove()
     }
 
 //    fun setAlarms() {

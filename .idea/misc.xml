@@ -5,6 +5,7 @@
       <map>
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.1125" />
         <entry key="app/src/main/res/layout/activity_scrolling.xml" value="0.1125" />
+        <entry key="app/src/main/res/layout/activity_stop_alarm.xml" value="0.121875" />
         <entry key="app/src/main/res/layout/alarm_dialog.xml" value="0.34858093261718753" />
         <entry key="app/src/main/res/layout/content_scrolling.xml" value="0.1125" />
         <entry key="app/src/main/res/layout/fragment_login.xml" value="0.1" />
