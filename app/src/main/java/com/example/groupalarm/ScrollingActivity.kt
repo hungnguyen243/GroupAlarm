@@ -89,9 +89,15 @@ class ScrollingActivity : AppCompatActivity() {
                     if (docChange.type == DocumentChange.Type.ADDED) {
                         val alarm = docChange.document.toObject(Alarm::class.java)
                         val intent = Intent(applicationContext, AlarmReceiver::class.java)
+
+                        if (Date(alarm.time) < Calendar.getInstance().time) {
+                            return
+                        }
+
                         intent.putExtra(ALARM_REQUEST_CODE, alarm.time.toInt())
                         pendingIntent = PendingIntent.getBroadcast(applicationContext, alarm.time.toInt(), intent, FLAG_IMMUTABLE or FLAG_UPDATE_CURRENT)
                         alarmManager.setExact(AlarmManager.RTC_WAKEUP, alarm.time, pendingIntent);
+
                         adapter.addAlarm(alarm, docChange.document.id)
 
                     } else if (docChange.type == DocumentChange.Type.REMOVED) {
