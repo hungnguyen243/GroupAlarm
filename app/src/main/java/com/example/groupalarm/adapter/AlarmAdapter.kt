@@ -7,7 +7,6 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.groupalarm.databinding.PostRowBinding
 import com.google.firebase.firestore.FirebaseFirestore
-//import hu.bme.aut.aitforumdemo.CreatePostActivity
 import com.example.groupalarm.data.Alarm
 
 class AlarmAdapter : RecyclerView.Adapter<AlarmAdapter.ViewHolder> {
@@ -40,17 +39,17 @@ class AlarmAdapter : RecyclerView.Adapter<AlarmAdapter.ViewHolder> {
 
     fun addAlarm(alarm: Alarm, key: String) {
         alarmList.add(alarm)
-//        alarmList.add(key)
-        //notifyDataSetChanged()
+        alarmKeys.add(key)
+        notifyDataSetChanged()
         notifyItemInserted(alarmList.lastIndex)
     }
 
     // when I remove the post object
     private fun removePost(index: Int) {
-//        FirebaseFirestore.getInstance().collection(
-//            CreatePostActivity.COLLECTION_POSTS).document(
-//            postKeys[index]
-//        ).delete()
+        FirebaseFirestore.getInstance().collection(
+            CreatePostActivity.COLLECTION_ALARMS).document(
+            alarmKeys[index]
+        ).delete()
 
         alarmList.removeAt(index)
         alarmKeys.removeAt(index)
@@ -67,12 +66,10 @@ class AlarmAdapter : RecyclerView.Adapter<AlarmAdapter.ViewHolder> {
         }
     }
 
-
-
     inner class ViewHolder(val binding: PostRowBinding) : RecyclerView.ViewHolder(binding.root){
         fun bind(alarm: Alarm) {
-            binding.tvAuthor.text = alarm.isActive.toString()
-            binding.tvTitle.text = alarm.users.toString()
+            binding.alarmAuthor.text = alarm.isActive.toString()
+            binding.alarmTitle.text = alarm.users.toString()
 
 //            if (currentUid == alarm.uid) {
 //                binding.btnDelete.visibility = View.VISIBLE
