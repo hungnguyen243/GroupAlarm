@@ -73,6 +73,7 @@ class AlarmDialog: DialogFragment() {
                 val user = documentSnapshot.toObject(User::class.java)
                 System.out.println("USER NAME " +user!!.username)
                 val newAlarm = Alarm(
+                    "alarm title",
                     time,
                     dialogViewBinding.toggleButton.isChecked,
                     arrayListOf(user!!),

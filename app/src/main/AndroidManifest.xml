@@ -2,7 +2,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="com.example.groupalarm" >
-https://github.com/hungnguyen243/GroupAlarm/pull/2/conflict?name=app%252Fsrc%252Fmain%252Fjava%252Fcom%252Fexample%252Fgroupalarm%252FScrollingActivity.kt&ancestor_oid=03450f1f7e21e486d1e84c891a4d6991524f2e2f&base_oid=e1059eb5bf88f2a00b380be28b5e4162b85e7c33&head_oid=e8f9cec686ec710d4e03e47cc0a35aaf641b91ff
     <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
 
     <application

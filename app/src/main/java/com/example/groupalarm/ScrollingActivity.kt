@@ -13,9 +13,11 @@ import android.view.MenuItem
 import android.widget.TimePicker
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.example.groupalarm.adapter.AlarmAdapter
 import com.example.groupalarm.data.Alarm
 import com.example.groupalarm.databinding.ActivityScrollingBinding
 import com.example.groupalarm.dialog.AlarmDialog
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.*
 import com.google.firebase.firestore.EventListener
 import java.util.*
