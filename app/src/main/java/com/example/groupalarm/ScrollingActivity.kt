@@ -25,12 +25,13 @@ import java.util.*
 class ScrollingActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityScrollingBinding
-    lateinit var pendingIntent: PendingIntent
+
     lateinit var alarmManager: AlarmManager
 
     companion object {
         const val COLLECTION_ALARMS = "alarms"
         const val ALARM_REQUEST_CODE = "alarmRequestCode"
+        var alarmIntents = hashMapOf<String, PendingIntent>()
     }
 
     lateinit var alarmDb: CollectionReference
@@ -95,13 +96,19 @@ class ScrollingActivity : AppCompatActivity() {
                         val intent = Intent(this@ScrollingActivity, AlarmReceiver::class.java)
 
                         intent.putExtra(ALARM_REQUEST_CODE, alarm.time.toInt())
-                        pendingIntent = PendingIntent.getBroadcast(applicationContext, alarm.time.toInt(), intent, FLAG_IMMUTABLE or FLAG_UPDATE_CURRENT)
+                        var pendingIntent = PendingIntent.getBroadcast(applicationContext, alarm.time.toInt(), intent, FLAG_IMMUTABLE or FLAG_UPDATE_CURRENT)
+                        alarmIntents.put(docChange.document.id, pendingIntent)
                         alarmManager.setExact(AlarmManager.RTC_WAKEUP, alarm.time, pendingIntent);
 
                     } else if (docChange.type == DocumentChange.Type.REMOVED) {
                         adapter.removePostByKey(docChange.document.id)
+                        var pendingIntentToBeRemoved = alarmIntents.get(docChange.document.id)
+                        alarmManager.cancel(pendingIntentToBeRemoved)
+                        pendingIntentToBeRemoved!!.cancel()
                     } else if (docChange.type == DocumentChange.Type.MODIFIED) {
-
+                        val alarm = docChange.document.toObject(Alarm::class.java)
+                        var updatedPendingIntent = alarmIntents.get(docChange.document.id)
+                        alarmManager.setExact(AlarmManager.RTC_WAKEUP, alarm.time, updatedPendingIntent);
                     }
                 }
             }

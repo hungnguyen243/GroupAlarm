@@ -29,6 +29,8 @@ class AlarmDialog: DialogFragment() {
 
     lateinit var dialogViewBinding: AlarmDialogBinding
 
+    private var isEditMode = false
+
 
     @RequiresApi(Build.VERSION_CODES.M)
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
@@ -71,9 +73,8 @@ class AlarmDialog: DialogFragment() {
             .document(currUserEmail).get().
             addOnSuccessListener { documentSnapshot ->
                 val user = documentSnapshot.toObject(User::class.java)
-
                 val newAlarm = Alarm(
-                    "alarm title",
+                    dialogViewBinding.etAlarmTitle.text.toString(),
                     time,
                     dialogViewBinding.toggleButton.isChecked,
                     arrayListOf(user!!),
@@ -81,8 +82,6 @@ class AlarmDialog: DialogFragment() {
                 )
                 alarmCollections.add(newAlarm)
             }
-
-
         }
         dialogBuilder.setNegativeButton(getString(R.string.cancel_btn)) {
                 dialog, which ->
