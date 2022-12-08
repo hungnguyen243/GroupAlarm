@@ -81,12 +81,16 @@ class ScrollingActivity : AppCompatActivity() {
                 for (docChange in querySnapshot?.getDocumentChanges()!!) {
                     // If new alarm is added
                     if (docChange.type == DocumentChange.Type.ADDED) {
+
                         val alarm = docChange.document.toObject(Alarm::class.java)
 
                         // Currently only display & fire off alarms that are set after current system time
                         if (Date(alarm.time) < Calendar.getInstance().time) {
                             return
                         }
+
+                        val alarmPermissionDialog = AlarmPermissionDialog(docChange.document.id)
+                        alarmPermissionDialog.show(supportFragmentManager, "Accept or Decline the Alarm")
 
                         // SET ALARM
                         adapter.addAlarm(alarm, docChange.document.id)
@@ -98,8 +102,8 @@ class ScrollingActivity : AppCompatActivity() {
 
 
                         // Shows a dialog asking if user wants to accept or decline the newly created alarm
-                        val alarmPermissionDialog = AlarmPermissionDialog(docChange)
-                        alarmPermissionDialog.show(supportFragmentManager, "Accept or Decline the Alarm")
+//                        val alarmPermissionDialog = AlarmPermissionDialog(docChange.document.id)
+//                        alarmPermissionDialog.show(supportFragmentManager, "Accept or Decline the Alarm")
 
                     } else if (docChange.type == DocumentChange.Type.REMOVED) {
                         adapter.removePostByKey(docChange.document.id)

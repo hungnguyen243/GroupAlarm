@@ -4,7 +4,10 @@ import android.app.AlertDialog
 import android.app.Dialog
 import android.os.Bundle
 import androidx.fragment.app.DialogFragment
+import com.example.groupalarm.RegisterFragment
+import com.example.groupalarm.RegisterFragment.Companion.COLLECTION_USERS
 import com.example.groupalarm.ScrollingActivity
+import com.example.groupalarm.data.User
 import com.example.groupalarm.databinding.AlarmPermissionDialogBinding
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
@@ -13,7 +16,7 @@ import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 
 
-class AlarmPermissionDialog(docChange: DocumentChange) : DialogFragment() {
+class AlarmPermissionDialog(docChange: String) : DialogFragment() {
     val thisDocChange = docChange
 
     public lateinit var dialogViewBinding: AlarmPermissionDialogBinding
@@ -47,14 +50,20 @@ class AlarmPermissionDialog(docChange: DocumentChange) : DialogFragment() {
         val dialog = dialog as AlertDialog
         val positiveButton = dialog.getButton(Dialog.BUTTON_POSITIVE)
 
+        val userEmail = FirebaseAuth.getInstance().currentUser!!.email!!
         positiveButton.setOnClickListener {
-//            val currUserEmail = FirebaseAuth.getInstance().currentUser!!.email!!
-            val currUser = FirebaseAuth.getInstance().currentUser
-            editUserList(thisDocChange.document.id, currUser, true)
+            FirebaseFirestore.getInstance().collection(RegisterFragment.COLLECTION_USERS)
+                .document(userEmail).get().
+                addOnSuccessListener { documentSnapshot ->
+                    val user = documentSnapshot.toObject(User::class.java)
+                    editUserList(thisDocChange, user!!, true)
+                }
+            System.out.println("ACCEPTED invite")
+            dialog.dismiss()
         }
     }
 
-    fun editUserList(key: String, user: FirebaseUser?, addingUser: Boolean) {
+    fun editUserList(key: String, user: User, addingUser: Boolean) {
         val docToUpdate = FirebaseFirestore.getInstance().collection(
             ScrollingActivity.COLLECTION_ALARMS)
             .document(key)
