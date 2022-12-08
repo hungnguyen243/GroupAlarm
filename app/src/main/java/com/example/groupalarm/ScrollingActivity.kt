@@ -3,20 +3,17 @@ package com.example.groupalarm
 import android.app.AlarmManager
 import android.app.PendingIntent
 import android.app.PendingIntent.*
-import android.content.ContentValues.TAG
 import android.content.Intent
-import android.content.IntentFilter
 import android.os.Bundle
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
-import android.widget.TimePicker
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.groupalarm.adapter.AlarmAdapter
 import com.example.groupalarm.data.Alarm
 import com.example.groupalarm.databinding.ActivityScrollingBinding
 import com.example.groupalarm.dialog.AlarmDialog
+import com.example.groupalarm.dialog.AlarmPermissionDialog
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.*
 import com.google.firebase.firestore.EventListener
@@ -82,6 +79,7 @@ class ScrollingActivity : AppCompatActivity() {
                 }
 
                 for (docChange in querySnapshot?.getDocumentChanges()!!) {
+                    // If new alarm is added
                     if (docChange.type == DocumentChange.Type.ADDED) {
                         val alarm = docChange.document.toObject(Alarm::class.java)
 
@@ -97,6 +95,11 @@ class ScrollingActivity : AppCompatActivity() {
                         intent.putExtra(ALARM_REQUEST_CODE, alarm.time.toInt())
                         pendingIntent = PendingIntent.getBroadcast(applicationContext, alarm.time.toInt(), intent, FLAG_IMMUTABLE or FLAG_UPDATE_CURRENT)
                         alarmManager.setExact(AlarmManager.RTC_WAKEUP, alarm.time, pendingIntent);
+
+
+                        // Shows a dialog asking if user wants to accept or decline the newly created alarm
+                        val alarmPermissionDialog = AlarmPermissionDialog(docChange)
+                        alarmPermissionDialog.show(supportFragmentManager, "Accept or Decline the Alarm")
 
                     } else if (docChange.type == DocumentChange.Type.REMOVED) {
                         adapter.removePostByKey(docChange.document.id)
