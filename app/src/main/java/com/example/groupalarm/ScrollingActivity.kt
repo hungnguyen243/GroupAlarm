@@ -3,15 +3,10 @@ package com.example.groupalarm
 import android.app.AlarmManager
 import android.app.PendingIntent
 import android.app.PendingIntent.*
-import android.content.ContentValues.TAG
 import android.content.Intent
-import android.content.IntentFilter
-import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
-import android.widget.TimePicker
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
@@ -20,6 +15,7 @@ import com.example.groupalarm.data.Alarm
 import com.example.groupalarm.data.User
 import com.example.groupalarm.databinding.ActivityScrollingBinding
 import com.example.groupalarm.dialog.AlarmDialog
+import com.example.groupalarm.dialog.AlarmPermissionDialog
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.*
 import com.google.firebase.firestore.EventListener
@@ -36,6 +32,7 @@ class ScrollingActivity : AppCompatActivity() {
         const val ALARM_REQUEST_CODE = "alarmRequestCode"
         var alarmIntents = hashMapOf<String, PendingIntent>()
         var alarmIds = hashMapOf<Alarm, String>()
+        var alarmTitles = hashMapOf<String, String>()
     }
 
     lateinit var alarmDb: CollectionReference
@@ -85,26 +82,42 @@ class ScrollingActivity : AppCompatActivity() {
                 }
 
                 for (docChange in querySnapshot?.getDocumentChanges()!!) {
+                    // If new alarm is added
                     if (docChange.type == DocumentChange.Type.ADDED) {
-                        System.out
                         val alarm = docChange.document.toObject(Alarm::class.java)
                         adapter.addAlarm(alarm, docChange.document.id)
+                        alarmTitles.put(docChange.document.id, alarm.title)
                         // Currently only fire off alarms that are set after current system time
 
+                        // Shows a dialog asking if user wants to accept or decline the newly created alarm
+
+
                         // SET ALARM
-                        System.out.println("DATE of alarm " + Date(alarm.time).toString())
-                        if (Date(alarm.time) >= Calendar.getInstance().time && alarm.owner == userEmail) {
-                            val intent = Intent(this@ScrollingActivity, AlarmReceiver::class.java)
+                        if (Date(alarm.time) >= Calendar.getInstance().time) {
+                            if(FirebaseAuth.getInstance().currentUser!!.email!! != alarm.owner) {
+                                val alarmPermissionDialog = AlarmPermissionDialog(docChange.document.id)
+                                alarmPermissionDialog.show(supportFragmentManager, getString(R.string.alarmDecision))
+                            }
+                            if (alarm.owner == userEmail) {
+                                val intent =
+                                    Intent(this@ScrollingActivity, AlarmReceiver::class.java)
 
-                            intent.putExtra(ALARM_REQUEST_CODE, docChange.document.id)
-                            var pendingIntent = PendingIntent.getBroadcast(applicationContext, alarm.time.toInt(), intent, FLAG_IMMUTABLE or FLAG_UPDATE_CURRENT)
-                            alarmIntents.put(docChange.document.id, pendingIntent)
-                            alarmIds.put(alarm, docChange.document.id)
-                            System.out.println("add alarm id" + docChange.document.id)
-                            alarmManager.setExact(AlarmManager.RTC_WAKEUP, alarm.time, pendingIntent)
+                                intent.putExtra(ALARM_REQUEST_CODE, docChange.document.id)
+                                var pendingIntent = PendingIntent.getBroadcast(
+                                    applicationContext,
+                                    alarm.time.toInt(),
+                                    intent,
+                                    FLAG_IMMUTABLE or FLAG_UPDATE_CURRENT
+                                )
+                                alarmIntents.put(docChange.document.id, pendingIntent)
+                                alarmIds.put(alarm, docChange.document.id)
+                                alarmManager.setExact(
+                                    AlarmManager.RTC_WAKEUP,
+                                    alarm.time,
+                                    pendingIntent
+                                )
+                            }
                         }
-
-
                     } else if (docChange.type == DocumentChange.Type.REMOVED) {
                         adapter.removePostByKey(docChange.document.id)
                         var pendingIntentToBeRemoved = alarmIntents.get(docChange.document.id)

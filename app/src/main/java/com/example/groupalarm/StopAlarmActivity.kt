@@ -40,13 +40,19 @@ class StopAlarmActivity : AppCompatActivity() {
 
         // STOP ALARM
         binding.btnStopAlarm.setOnClickListener {
-            Toast.makeText(this, "Alarm turned off", Toast.LENGTH_LONG).show()
+            val alarmRequestCode = intent.getIntExtra(ALARM_REQUEST_CODE, 0)
+            val newIntent = Intent(applicationContext, AlarmReceiver::class.java)
+            val pendingIntent = PendingIntent.getBroadcast(applicationContext, alarmRequestCode, newIntent, PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT)
+
+            val alarmManager = getSystemService(ALARM_SERVICE) as AlarmManager
+            alarmManager.cancel(pendingIntent)
+            Toast.makeText(this, getString(R.string.alarmTurnedOff), Toast.LENGTH_LONG).show()
             ringtone.stop()
         }
 
         // Bring user back to app
         binding.btnBackToApp.setOnClickListener {
-            startActivity(Intent(this, MainActivity::class.java))
+            startActivity(Intent(this, ScrollingActivity::class.java))
         }
 
     }

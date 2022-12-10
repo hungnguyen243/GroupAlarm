@@ -37,7 +37,7 @@ class AlarmDialog: DialogFragment() {
         val dialogBuilder = AlertDialog.Builder(requireContext())
 
 
-        dialogBuilder.setTitle("Create an Alarm")
+        dialogBuilder.setTitle(getString(R.string.createAlarm))
 
         dialogViewBinding = AlarmDialogBinding.inflate(requireActivity().layoutInflater)
         dialogBuilder.setView(dialogViewBinding.root)

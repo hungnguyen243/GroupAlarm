@@ -6,13 +6,14 @@ import android.content.Context
 import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View.GONE
+import android.os.Bundle
+import android.view.View.INVISIBLE
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.example.groupalarm.AlarmReceiver
 import com.example.groupalarm.RegisterFragment
-import com.example.groupalarm.ScrollingActivity
 import com.example.groupalarm.ScrollingActivity.Companion.alarmIds
 import com.example.groupalarm.ScrollingActivity.Companion.alarmIntents
 import com.example.groupalarm.databinding.PostRowBinding
@@ -23,6 +24,8 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FieldValue
 import java.text.SimpleDateFormat
 import java.util.*
+import com.example.groupalarm.DetailsActivity
+import com.example.groupalarm.ScrollingActivity
 
 class AlarmAdapter : RecyclerView.Adapter<AlarmAdapter.ViewHolder> {
 
@@ -122,11 +125,12 @@ class AlarmAdapter : RecyclerView.Adapter<AlarmAdapter.ViewHolder> {
                 .document(userEmail).get()
             val alarmManager = context.getSystemService(AppCompatActivity.ALARM_SERVICE) as AlarmManager
 
-            binding.alarmTitle.text = alarm.title.toString()
+            binding.alarmTitle.text = alarm.title
             binding.alarmTime.text = convertTimeForDisplay(alarm.time)
+            binding.alarmOwner.text = alarm.owner
             // Only allow toggling if alarm's time is >= current time
             if (alarm.owner != userEmail) {
-                binding.btnDelete.visibility = GONE
+                binding.btnDelete.visibility = INVISIBLE
             }
             if (Date(alarm.time) < Calendar.getInstance().time) {
                 binding.btnToggleAlarm.isChecked = false
@@ -168,11 +172,43 @@ class AlarmAdapter : RecyclerView.Adapter<AlarmAdapter.ViewHolder> {
                removePost(adapterPosition)
             }
 
+
 //            if (currentUid == alarm.uid) {
 //                binding.btnDelete.visibility = View.VISIBLE
 //            } else {
 //                binding.btnDelete.visibility = View.GONE
 //            }
+
+//            binding.btnDelete.setOnClickListener {
+//                FirebaseFirestore.getInstance().collection(
+//                    CreatePostActivity.COLLECTION_POSTS
+//                ).document(
+//                    postKeys[adapterPosition]
+//                ).delete()
+//            }
+
+            binding.btnDetails.setOnClickListener {
+                val intentDetails = Intent()
+                intentDetails.setClass(
+                    (context as ScrollingActivity), DetailsActivity::class.java
+                )
+                intentDetails.putExtra(
+                    "AlarmTitle", alarm.title
+                )
+                intentDetails.putExtra(
+                    "AlarmTime", alarm.time
+                )
+                intentDetails.putExtra(
+                    "AlarmOwner", alarm.owner
+                )
+
+                val bundle = Bundle()
+                intentDetails.putExtra(
+                    "AlarmUserList", alarm.users
+                )
+
+                (context as ScrollingActivity).startActivity(Intent(intentDetails))
+            }
 
 //            if (post.imgUrl != "") {
 //                binding.ivPhoto.visibility = View.VISIBLE

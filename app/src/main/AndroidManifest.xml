@@ -32,6 +32,12 @@
             android:label="@string/app_name"
             android:theme="@style/Theme.GroupAlarm.NoActionBar" />
 
+        <activity
+            android:name=".DetailsActivity"
+            android:exported="true"
+            android:label="@string/app_name"
+            android:theme="@style/Theme.GroupAlarm.NoActionBar" />
+
         <receiver
             android:name=".AlarmReceiver"
             android:enabled="true"
