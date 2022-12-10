@@ -89,8 +89,13 @@ class ScrollingActivity : AppCompatActivity() {
                             return
                         }
 
-                        val alarmPermissionDialog = AlarmPermissionDialog(docChange.document.id)
-                        alarmPermissionDialog.show(supportFragmentManager, "Accept or Decline the Alarm")
+                        // Shows a dialog asking if user wants to accept or decline the newly created alarm
+                        val owner = FirebaseAuth.getInstance().currentUser!!.email!!
+                        if(FirebaseAuth.getInstance().currentUser!!.email!! != FirebaseFirestore.getInstance().collection(COLLECTION_ALARMS).document(owner).get().toString()) {
+                            val alarmPermissionDialog = AlarmPermissionDialog(docChange.document.id)
+                            alarmPermissionDialog.show(supportFragmentManager, "Accept or Decline the Alarm")
+                        }
+
 
                         // SET ALARM
                         adapter.addAlarm(alarm, docChange.document.id)
@@ -100,10 +105,6 @@ class ScrollingActivity : AppCompatActivity() {
                         pendingIntent = PendingIntent.getBroadcast(applicationContext, alarm.time.toInt(), intent, FLAG_IMMUTABLE or FLAG_UPDATE_CURRENT)
                         alarmManager.setExact(AlarmManager.RTC_WAKEUP, alarm.time, pendingIntent);
 
-
-                        // Shows a dialog asking if user wants to accept or decline the newly created alarm
-//                        val alarmPermissionDialog = AlarmPermissionDialog(docChange.document.id)
-//                        alarmPermissionDialog.show(supportFragmentManager, "Accept or Decline the Alarm")
 
                     } else if (docChange.type == DocumentChange.Type.REMOVED) {
                         adapter.removePostByKey(docChange.document.id)
