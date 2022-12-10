@@ -6,15 +6,18 @@ import android.app.PendingIntent.*
 import android.content.ContentValues.TAG
 import android.content.Intent
 import android.content.IntentFilter
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.TimePicker
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import com.example.groupalarm.adapter.AlarmAdapter
 import com.example.groupalarm.data.Alarm
+import com.example.groupalarm.data.User
 import com.example.groupalarm.databinding.ActivityScrollingBinding
 import com.example.groupalarm.dialog.AlarmDialog
 import com.google.firebase.auth.FirebaseAuth
@@ -32,6 +35,7 @@ class ScrollingActivity : AppCompatActivity() {
         const val COLLECTION_ALARMS = "alarms"
         const val ALARM_REQUEST_CODE = "alarmRequestCode"
         var alarmIntents = hashMapOf<String, PendingIntent>()
+        var alarmIds = hashMapOf<Alarm, String>()
     }
 
     lateinit var alarmDb: CollectionReference
@@ -64,13 +68,14 @@ class ScrollingActivity : AppCompatActivity() {
 
         getAllAlarms()
 
-        binding.btnRefreshAlarms.setOnClickListener {
-            getAllAlarms()
-        }
     }
 
     private fun getAllAlarms() {
         alarmDb = FirebaseFirestore.getInstance().collection(COLLECTION_ALARMS)
+        val userEmail = FirebaseAuth.getInstance().currentUser!!.email!!
+        val currUser =  FirebaseFirestore.getInstance().collection(RegisterFragment.COLLECTION_USERS)
+            .document(userEmail).get()
+
         val eventListener = object : EventListener<QuerySnapshot> {
             override fun onEvent(querySnapshot: QuerySnapshot?,
                                  e: FirebaseFirestoreException?) {
@@ -84,31 +89,50 @@ class ScrollingActivity : AppCompatActivity() {
 
                 for (docChange in querySnapshot?.getDocumentChanges()!!) {
                     if (docChange.type == DocumentChange.Type.ADDED) {
+                        System.out
                         val alarm = docChange.document.toObject(Alarm::class.java)
-
-                        // Currently only display & fire off alarms that are set after current system time
-                        if (Date(alarm.time) < Calendar.getInstance().time) {
-                            return
-                        }
+                        adapter.addAlarm(alarm, docChange.document.id)
+                        // Currently only fire off alarms that are set after current system time
 
                         // SET ALARM
-                        adapter.addAlarm(alarm, docChange.document.id)
-                        val intent = Intent(this@ScrollingActivity, AlarmReceiver::class.java)
+                        if (Date(alarm.time) >= Calendar.getInstance().time) {
+                            val intent = Intent(this@ScrollingActivity, AlarmReceiver::class.java)
 
-                        intent.putExtra(ALARM_REQUEST_CODE, alarm.time.toInt())
-                        var pendingIntent = PendingIntent.getBroadcast(applicationContext, alarm.time.toInt(), intent, FLAG_IMMUTABLE or FLAG_UPDATE_CURRENT)
-                        alarmIntents.put(docChange.document.id, pendingIntent)
-                        alarmManager.setExact(AlarmManager.RTC_WAKEUP, alarm.time, pendingIntent);
+                            intent.putExtra(ALARM_REQUEST_CODE, docChange.document.id)
+                            var pendingIntent = PendingIntent.getBroadcast(applicationContext, alarm.time.toInt(), intent, FLAG_IMMUTABLE or FLAG_UPDATE_CURRENT)
+                            alarmIntents.put(docChange.document.id, pendingIntent)
+                            alarmIds.put(alarm, docChange.document.id)
+                            System.out.println("add alarm id" + docChange.document.id)
+                            alarmManager.setExact(AlarmManager.RTC_WAKEUP, alarm.time, pendingIntent);
+                        }
+
 
                     } else if (docChange.type == DocumentChange.Type.REMOVED) {
                         adapter.removePostByKey(docChange.document.id)
                         var pendingIntentToBeRemoved = alarmIntents.get(docChange.document.id)
-                        alarmManager.cancel(pendingIntentToBeRemoved)
-                        pendingIntentToBeRemoved!!.cancel()
+                        if (pendingIntentToBeRemoved != null) {
+                            alarmManager.cancel(pendingIntentToBeRemoved)
+                        }
                     } else if (docChange.type == DocumentChange.Type.MODIFIED) {
                         val alarm = docChange.document.toObject(Alarm::class.java)
-                        var updatedPendingIntent = alarmIntents.get(docChange.document.id)
-                        alarmManager.setExact(AlarmManager.RTC_WAKEUP, alarm.time, updatedPendingIntent);
+                        var pendingIntent = alarmIntents.getOrPut(docChange.document.id) {
+                            val intent = Intent(this@ScrollingActivity, AlarmReceiver::class.java)
+                            intent.putExtra(ALARM_REQUEST_CODE, docChange.document.id)
+                            PendingIntent.getBroadcast(
+                                applicationContext,
+                                alarm.time.toInt(),
+                                intent,
+                                FLAG_IMMUTABLE or FLAG_UPDATE_CURRENT
+                            )
+                        }
+                        System.out.println("alarm intent doc id" + docChange.document.id)
+                        if (alarm.users.map{o -> o.email}.contains(userEmail)) {
+                                alarmManager.setExact(AlarmManager.RTC_WAKEUP, alarm.time, pendingIntent);
+                            }
+                            else {
+                                System.out.println("Canceled alarm")
+                                alarmManager.cancel(pendingIntent)
+                            }
                     }
                 }
             }

@@ -27,11 +27,10 @@ class AlarmReceiver: BroadcastReceiver() {
 
 //        Toast.makeText(context, "Alarm! Wake up! Wake up!", Toast.LENGTH_LONG).show()
 
-        System.out.println("BROADCAST RECEIVED")
 
-        val alarmRequestCode = intent.getIntExtra(ALARM_REQUEST_CODE, 0)
+        val alarmRequestCode = intent.getStringExtra(ALARM_REQUEST_CODE)
         val newIntent = Intent(context, StopAlarmActivity::class.java)
-        newIntent.putExtra("alarmRequestCode", alarmRequestCode)
+        newIntent.putExtra(ALARM_REQUEST_CODE, alarmRequestCode)
         newIntent.setFlags(FLAG_ACTIVITY_NEW_TASK)
 
         context.startActivity(newIntent)

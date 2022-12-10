@@ -11,6 +11,7 @@ import android.view.WindowManager
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.groupalarm.ScrollingActivity.Companion.ALARM_REQUEST_CODE
+import com.example.groupalarm.ScrollingActivity.Companion.alarmIntents
 import com.example.groupalarm.databinding.ActivityStopAlarmBinding
 
 
@@ -23,6 +24,7 @@ class StopAlarmActivity : AppCompatActivity() {
         binding = ActivityStopAlarmBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+
         var alarmUri: Uri? = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM)
         if (alarmUri == null) {
             alarmUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
@@ -34,14 +36,10 @@ class StopAlarmActivity : AppCompatActivity() {
         // play ringtone
         ringtone.play()
 
+
+
         // STOP ALARM
         binding.btnStopAlarm.setOnClickListener {
-            val alarmRequestCode = intent.getIntExtra(ALARM_REQUEST_CODE, 0)
-            val newIntent = Intent(applicationContext, AlarmReceiver::class.java)
-            val pendingIntent = PendingIntent.getBroadcast(applicationContext, alarmRequestCode, newIntent, PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT)
-
-            val alarmManager = getSystemService(ALARM_SERVICE) as AlarmManager
-            alarmManager.cancel(pendingIntent)
             Toast.makeText(this, "Alarm turned off", Toast.LENGTH_LONG).show()
             ringtone.stop()
         }
