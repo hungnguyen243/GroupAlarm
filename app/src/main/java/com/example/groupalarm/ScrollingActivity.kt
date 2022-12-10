@@ -73,9 +73,6 @@ class ScrollingActivity : AppCompatActivity() {
     private fun getAllAlarms() {
         alarmDb = FirebaseFirestore.getInstance().collection(COLLECTION_ALARMS)
         val userEmail = FirebaseAuth.getInstance().currentUser!!.email!!
-        val currUser =  FirebaseFirestore.getInstance().collection(RegisterFragment.COLLECTION_USERS)
-            .document(userEmail).get()
-
         val eventListener = object : EventListener<QuerySnapshot> {
             override fun onEvent(querySnapshot: QuerySnapshot?,
                                  e: FirebaseFirestoreException?) {
@@ -95,7 +92,8 @@ class ScrollingActivity : AppCompatActivity() {
                         // Currently only fire off alarms that are set after current system time
 
                         // SET ALARM
-                        if (Date(alarm.time) >= Calendar.getInstance().time) {
+                        System.out.println("DATE of alarm " + Date(alarm.time).toString())
+                        if (Date(alarm.time) >= Calendar.getInstance().time && alarm.owner == userEmail) {
                             val intent = Intent(this@ScrollingActivity, AlarmReceiver::class.java)
 
                             intent.putExtra(ALARM_REQUEST_CODE, docChange.document.id)
@@ -103,7 +101,7 @@ class ScrollingActivity : AppCompatActivity() {
                             alarmIntents.put(docChange.document.id, pendingIntent)
                             alarmIds.put(alarm, docChange.document.id)
                             System.out.println("add alarm id" + docChange.document.id)
-                            alarmManager.setExact(AlarmManager.RTC_WAKEUP, alarm.time, pendingIntent);
+                            alarmManager.setExact(AlarmManager.RTC_WAKEUP, alarm.time, pendingIntent)
                         }
 
 
