@@ -83,6 +83,7 @@ class ScrollingActivity : AppCompatActivity() {
                     if (docChange.type == DocumentChange.Type.ADDED) {
 
                         val alarm = docChange.document.toObject(Alarm::class.java)
+                        adapter.addAlarm(alarm, docChange.document.id)
 
                         // Currently only display & fire off alarms that are set after current system time
                         if (Date(alarm.time) < Calendar.getInstance().time) {
@@ -98,7 +99,7 @@ class ScrollingActivity : AppCompatActivity() {
 
 
                         // SET ALARM
-                        adapter.addAlarm(alarm, docChange.document.id)
+
                         val intent = Intent(this@ScrollingActivity, AlarmReceiver::class.java)
 
                         intent.putExtra(ALARM_REQUEST_CODE, alarm.time.toInt())

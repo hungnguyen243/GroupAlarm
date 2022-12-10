@@ -2,17 +2,16 @@ package com.example.groupalarm.adapter
 
 import android.content.Context
 import android.content.Intent
+import android.os.Bundle
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import androidx.core.content.ContextCompat.startActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.example.groupalarm.DetailsActivity
-import com.example.groupalarm.MainActivity
 import com.example.groupalarm.ScrollingActivity
+import com.example.groupalarm.data.Alarm
 import com.example.groupalarm.databinding.PostRowBinding
 import com.google.firebase.firestore.FirebaseFirestore
-import com.example.groupalarm.data.Alarm
+
 
 class AlarmAdapter : RecyclerView.Adapter<AlarmAdapter.ViewHolder> {
 
@@ -105,6 +104,8 @@ class AlarmAdapter : RecyclerView.Adapter<AlarmAdapter.ViewHolder> {
                 intentDetails.putExtra(
                     "AlarmOwner", alarm.owner
                 )
+
+                val bundle = Bundle()
                 intentDetails.putExtra(
                     "AlarmUserList", alarm.users
                 )
