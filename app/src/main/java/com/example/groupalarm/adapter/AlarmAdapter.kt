@@ -69,8 +69,9 @@ class AlarmAdapter : RecyclerView.Adapter<AlarmAdapter.ViewHolder> {
 
     inner class ViewHolder(val binding: PostRowBinding) : RecyclerView.ViewHolder(binding.root){
         fun bind(alarm: Alarm) {
-            binding.alarmAuthor.text = alarm.isActive.toString()
-            binding.alarmTitle.text = alarm.users.toString()
+            binding.alarmTitle.text = alarm.title.toString()
+            binding.alarmAuthor.text = alarm.owner.toString()
+            binding.alarmBody.text = alarm.time.toString()
 
 //            if (currentUid == alarm.uid) {
 //                binding.btnDelete.visibility = View.VISIBLE
