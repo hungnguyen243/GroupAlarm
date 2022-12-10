@@ -1,10 +1,14 @@
 package com.example.groupalarm.adapter
 
 import android.content.Context
+import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat.startActivity
 import androidx.recyclerview.widget.RecyclerView
+import com.example.groupalarm.DetailsActivity
+import com.example.groupalarm.MainActivity
 import com.example.groupalarm.ScrollingActivity
 import com.example.groupalarm.databinding.PostRowBinding
 import com.google.firebase.firestore.FirebaseFirestore
@@ -86,6 +90,27 @@ class AlarmAdapter : RecyclerView.Adapter<AlarmAdapter.ViewHolder> {
 //                    postKeys[adapterPosition]
 //                ).delete()
 //            }
+
+            binding.btnDetails.setOnClickListener {
+                val intentDetails = Intent()
+                intentDetails.setClass(
+                    (context as ScrollingActivity), DetailsActivity::class.java
+                )
+                intentDetails.putExtra(
+                    "AlarmTitle", alarm.title
+                )
+                intentDetails.putExtra(
+                    "AlarmTime", alarm.time
+                )
+                intentDetails.putExtra(
+                    "AlarmOwner", alarm.owner
+                )
+                intentDetails.putExtra(
+                    "AlarmUserList", alarm.users
+                )
+
+                (context as ScrollingActivity).startActivity(Intent(intentDetails))
+            }
 
 //            if (post.imgUrl != "") {
 //                binding.ivPhoto.visibility = View.VISIBLE
