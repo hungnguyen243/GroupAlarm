@@ -93,7 +93,7 @@ class ScrollingActivity : AppCompatActivity() {
                         val owner = FirebaseAuth.getInstance().currentUser!!.email!!
                         if(FirebaseAuth.getInstance().currentUser!!.email!! != alarm.owner) {
                             val alarmPermissionDialog = AlarmPermissionDialog(docChange.document.id)
-                            alarmPermissionDialog.show(supportFragmentManager, "Accept or Decline the Alarm")
+                            alarmPermissionDialog.show(supportFragmentManager, getString(R.string.alarmDecision))
                         }
 
 

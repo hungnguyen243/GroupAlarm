@@ -23,11 +23,10 @@ class AlarmReceiver: BroadcastReceiver() {
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onReceive(context: Context, intent: Intent) {
         // we will use vibrator first
-        // we will use vibrator first
 
 //        Toast.makeText(context, "Alarm! Wake up! Wake up!", Toast.LENGTH_LONG).show()
 
-        System.out.println("BROADCAST RECEIVED")
+        System.out.println(context.getString(R.string.broadcastRecevied))
 
         val alarmRequestCode = intent.getIntExtra(ALARM_REQUEST_CODE, 0)
         val newIntent = Intent(context, StopAlarmActivity::class.java)

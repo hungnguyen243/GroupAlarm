@@ -98,4 +98,16 @@
     <string name="confirm_btn">Confirm</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="alarmTurnedOff">Alarm turned off</string>
+    <string name="alarmDecision">Accept or Decline the Alarm</string>
+    <string name="registrationSuccess">Registration OK</string>
+    <string name="fieldCannotBeEmpty">This field can not be empty</string>
+    <string name="passwordCannotBeEmpty">The password can not be empty</string>
+    <string name="loginSuccess">Login OK</string>
+    <string name="broadcastRecevied">BROADCAST RECEIVED</string>
+    <string name="accept">Accept</string>
+    <string name="decline">Decline</string>
+    <string name="inviteAccepted">ACCEPTED invite</string>
+    <string name="createAlarm">Create an Alarm</string>
+    <string name="inviteForAlarm">\"Would you like to accept the alarm for \"</string>
 </resources>

@@ -70,7 +70,7 @@ class RegisterFragment : Fragment() {
 
                 Toast.makeText(
                     requireActivity(),
-                    "Registration OK",
+                    getString(R.string.registrationSuccess),
                     Toast.LENGTH_LONG
                 ).show()
             }.addOnFailureListener{
@@ -87,15 +87,15 @@ class RegisterFragment : Fragment() {
     private fun isFormValid(): Boolean {
         return when {
             binding.etUsername.text.isEmpty() -> {
-                binding.etEmail.error = "This field can not be empty"
+                binding.etEmail.error = getString(R.string.fieldCannotBeEmpty)
                 false
             }
             binding.etEmail.text.isEmpty() -> {
-                binding.etEmail.error = "This field can not be empty"
+                binding.etEmail.error = getString(R.string.fieldCannotBeEmpty)
                 false
             }
             binding.etPassword.text.isEmpty() -> {
-                binding.etPassword.error = "The password can not be empty"
+                binding.etPassword.error = getString(R.string.passwordCannotBeEmpty)
                 false
             }
             else -> true

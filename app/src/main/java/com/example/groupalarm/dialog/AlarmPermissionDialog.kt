@@ -4,9 +4,11 @@ import android.app.AlertDialog
 import android.app.Dialog
 import android.os.Bundle
 import androidx.fragment.app.DialogFragment
+import com.example.groupalarm.R
 import com.example.groupalarm.RegisterFragment
 import com.example.groupalarm.RegisterFragment.Companion.COLLECTION_USERS
 import com.example.groupalarm.ScrollingActivity
+import com.example.groupalarm.ScrollingActivity.Companion.COLLECTION_ALARMS
 import com.example.groupalarm.data.User
 import com.example.groupalarm.databinding.AlarmPermissionDialogBinding
 import com.google.firebase.auth.FirebaseAuth
@@ -19,7 +21,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 class AlarmPermissionDialog(docChange: String) : DialogFragment() {
     val thisDocChange = docChange
 
-    public lateinit var dialogViewBinding: AlarmPermissionDialogBinding
+    lateinit var dialogViewBinding: AlarmPermissionDialogBinding
 
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
@@ -30,14 +32,14 @@ class AlarmPermissionDialog(docChange: String) : DialogFragment() {
         )
         dialogBuilder.setView(dialogViewBinding.root)
 
-        dialogBuilder.setTitle("Would you like to accept this alarm for Blank_Time?")
+        dialogBuilder.setTitle(getString(R.string.inviteForAlarm) + "NEEDS_TO_BE_REPLACED")
 
-        dialogBuilder.setPositiveButton("Accept") {
+        dialogBuilder.setPositiveButton(getString(R.string.accept)) {
                 dialog, which ->
             onResume()
 
         }
-        dialogBuilder.setNegativeButton("Decline") {
+        dialogBuilder.setNegativeButton(getString(R.string.decline)) {
                 dialog, which ->
         }
 
@@ -58,7 +60,7 @@ class AlarmPermissionDialog(docChange: String) : DialogFragment() {
                     val user = documentSnapshot.toObject(User::class.java)
                     editUserList(thisDocChange, user!!, true)
                 }
-            System.out.println("ACCEPTED invite")
+            System.out.println(getString(R.string.inviteAccepted))
             dialog.dismiss()
         }
     }

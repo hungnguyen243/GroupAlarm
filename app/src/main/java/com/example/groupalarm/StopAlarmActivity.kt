@@ -42,7 +42,7 @@ class StopAlarmActivity : AppCompatActivity() {
 
             val alarmManager = getSystemService(ALARM_SERVICE) as AlarmManager
             alarmManager.cancel(pendingIntent)
-            Toast.makeText(this, "Alarm turned off", Toast.LENGTH_LONG).show()
+            Toast.makeText(this, getString(R.string.alarmTurnedOff), Toast.LENGTH_LONG).show()
             ringtone.stop()
         }
 
