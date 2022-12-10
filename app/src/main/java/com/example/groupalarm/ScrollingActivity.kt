@@ -91,7 +91,7 @@ class ScrollingActivity : AppCompatActivity() {
 
                         // Shows a dialog asking if user wants to accept or decline the newly created alarm
                         val owner = FirebaseAuth.getInstance().currentUser!!.email!!
-                        if(FirebaseAuth.getInstance().currentUser!!.email!! != FirebaseFirestore.getInstance().collection(COLLECTION_ALARMS).document(owner).get().toString()) {
+                        if(FirebaseAuth.getInstance().currentUser!!.email!! != alarm.owner) {
                             val alarmPermissionDialog = AlarmPermissionDialog(docChange.document.id)
                             alarmPermissionDialog.show(supportFragmentManager, "Accept or Decline the Alarm")
                         }
