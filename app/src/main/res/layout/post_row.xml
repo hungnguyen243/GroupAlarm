@@ -64,7 +64,8 @@
             android:backgroundTint="#50577A"
             android:textColor="#FFFFFF"
             card_view:layout_constraintEnd_toEndOf="parent"
-            card_view:layout_constraintTop_toTopOf="parent" />
+            card_view:layout_constraintTop_toTopOf="parent"
+            android:buttonTint="@color/white"/>
 
         <Button
             android:id="@+id/btnDelete"
