@@ -60,6 +60,10 @@ class AlarmAdapter : RecyclerView.Adapter<AlarmAdapter.ViewHolder> {
         notifyItemInserted(alarmList.lastIndex)
     }
 
+    fun alreadyHasAlarmDisplayed(key: String): Boolean {
+        return alarmKeys.contains(key)
+    }
+
     //Optional for now
     fun editAlarmByKey(alarm: Alarm, key: String) {
         val index = alarmKeys.indexOf(key)

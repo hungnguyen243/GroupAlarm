@@ -91,6 +91,8 @@ class ScrollingActivity : AppCompatActivity() {
                         // Currently only fire off alarms that are set after current system time
 
                         val alarm = docChange.document.toObject(Alarm::class.java)
+                        alarmIds[alarm] = docChange.document.id
+                        alarmTitles[docChange.document.id] = alarm.title
                         if(userEmail != alarm.owner) {
                             // Shows a dialog asking if user wants to accept or decline
                             // a newly created alarm
@@ -100,14 +102,10 @@ class ScrollingActivity : AppCompatActivity() {
                             }
                             else {
                                 adapter.addAlarm(alarm, docChange.document.id)
-                                alarmIds[alarm] = docChange.document.id
-                                alarmTitles[docChange.document.id] = alarm.title
                             }
                         }
                         else {
                             adapter.addAlarm(alarm, docChange.document.id)
-                            alarmIds[alarm] = docChange.document.id
-                            alarmTitles[docChange.document.id] = alarm.title
                             // set alarm
                             if (Date(alarm.time) >= Calendar.getInstance().time) {
                                 val intent =
@@ -147,9 +145,8 @@ class ScrollingActivity : AppCompatActivity() {
                                 FLAG_IMMUTABLE or FLAG_UPDATE_CURRENT
                             )
                         }
-                        if (alarmTitles.get(docChange.document.id) == null) {
+                        if (!adapter.alreadyHasAlarmDisplayed(docChange.document.id)) {
                             alarmIds[alarm] = docChange.document.id
-                            alarmTitles[docChange.document.id] = alarm.title
                             adapter.addAlarm(alarm, docChange.document.id)
                         }
                         if (alarm.users.map{o -> o.email}.contains(userEmail)) {
