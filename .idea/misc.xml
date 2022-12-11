@@ -3,21 +3,17 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
-        <entry key="..\:/Users/jangh/AndroidStudioProjects/GroupAlarm/app/src/main/res/layout/activity_details.xml" value="0.1" />
-        <entry key="..\:/Users/jangh/AndroidStudioProjects/GroupAlarm/app/src/main/res/layout/activity_main.xml" value="0.25416666666666665" />
-        <entry key="..\:/Users/jangh/AndroidStudioProjects/GroupAlarm/app/src/main/res/layout/alarm_dialog.xml" value="0.23854166666666668" />
-        <entry key="..\:/Users/jangh/AndroidStudioProjects/GroupAlarm/app/src/main/res/layout/alarm_permission_dialog.xml" value="0.2375" />
-        <entry key="..\:/Users/jangh/AndroidStudioProjects/GroupAlarm/app/src/main/res/layout/fragment_login.xml" value="0.25416666666666665" />
-        <entry key="..\:/Users/jangh/AndroidStudioProjects/GroupAlarm/app/src/main/res/layout/post_row.xml" value="0.264" />
-        <entry key="app/src/main/res/layout/activity_details.xml" value="0.1015625" />
+        <entry key="app/src/main/res/layout/activity_details.xml" value="0.47820892333984377" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.1125" />
         <entry key="app/src/main/res/layout/activity_scrolling.xml" value="0.1125" />
         <entry key="app/src/main/res/layout/activity_stop_alarm.xml" value="0.121875" />
-        <entry key="app/src/main/res/layout/alarm_dialog.xml" value="0.34858093261718753" />
+        <entry key="app/src/main/res/layout/alarm_dialog.xml" value="0.13887718687666223" />
+        <entry key="app/src/main/res/layout/alarm_permission_dialog.xml" value="0.2791666666666667" />
         <entry key="app/src/main/res/layout/content_scrolling.xml" value="0.1125" />
+        <entry key="app/src/main/res/layout/custom_title.xml" value="0.15534420289855072" />
         <entry key="app/src/main/res/layout/fragment_login.xml" value="0.1" />
         <entry key="app/src/main/res/layout/fragment_register.xml" value="0.1125" />
-        <entry key="app/src/main/res/layout/post_row.xml" value="0.4189374092297676" />
+        <entry key="app/src/main/res/layout/post_row.xml" value="0.4053059924569282" />
         <entry key="app/src/main/res/menu/menu_scrolling.xml" value="0.1125" />
       </map>
     </option>
