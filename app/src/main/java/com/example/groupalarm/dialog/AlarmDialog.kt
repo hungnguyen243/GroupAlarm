@@ -76,7 +76,7 @@ class AlarmDialog: DialogFragment() {
                 val newAlarm = Alarm(
                     dialogViewBinding.etAlarmTitle.text.toString(),
                     time,
-                    dialogViewBinding.toggleButton.isChecked,
+                    true,
                     arrayListOf(user!!),
                     FirebaseAuth.getInstance().currentUser!!.email!!,
                 )

@@ -4,6 +4,7 @@ import android.app.AlarmManager
 import android.app.PendingIntent
 import android.app.PendingIntent.*
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
@@ -83,22 +84,32 @@ class ScrollingActivity : AppCompatActivity() {
 
                 for (docChange in querySnapshot?.getDocumentChanges()!!) {
                     // If new alarm is added
+
                     if (docChange.type == DocumentChange.Type.ADDED) {
-                        val alarm = docChange.document.toObject(Alarm::class.java)
-                        adapter.addAlarm(alarm, docChange.document.id)
-                        alarmTitles.put(docChange.document.id, alarm.title)
+
+
                         // Currently only fire off alarms that are set after current system time
 
-                        // Shows a dialog asking if user wants to accept or decline the newly created alarm
-
-
-                        // SET ALARM
-                        if (Date(alarm.time) >= Calendar.getInstance().time) {
-                            if(FirebaseAuth.getInstance().currentUser!!.email!! != alarm.owner) {
+                        val alarm = docChange.document.toObject(Alarm::class.java)
+                        if(userEmail != alarm.owner) {
+                            // Shows a dialog asking if user wants to accept or decline
+                            // a newly created alarm
+                            if (Date(alarm.time) >= Calendar.getInstance().time) {
                                 val alarmPermissionDialog = AlarmPermissionDialog(docChange.document.id)
                                 alarmPermissionDialog.show(supportFragmentManager, getString(R.string.alarmDecision))
                             }
-                            if (alarm.owner == userEmail) {
+                            else {
+                                adapter.addAlarm(alarm, docChange.document.id)
+                                alarmIds[alarm] = docChange.document.id
+                                alarmTitles[docChange.document.id] = alarm.title
+                            }
+                        }
+                        else {
+                            adapter.addAlarm(alarm, docChange.document.id)
+                            alarmIds[alarm] = docChange.document.id
+                            alarmTitles[docChange.document.id] = alarm.title
+                            // set alarm
+                            if (Date(alarm.time) >= Calendar.getInstance().time) {
                                 val intent =
                                     Intent(this@ScrollingActivity, AlarmReceiver::class.java)
 
@@ -136,12 +147,15 @@ class ScrollingActivity : AppCompatActivity() {
                                 FLAG_IMMUTABLE or FLAG_UPDATE_CURRENT
                             )
                         }
-                        System.out.println("alarm intent doc id" + docChange.document.id)
+                        if (alarmTitles.get(docChange.document.id) == null) {
+                            alarmIds[alarm] = docChange.document.id
+                            alarmTitles[docChange.document.id] = alarm.title
+                            adapter.addAlarm(alarm, docChange.document.id)
+                        }
                         if (alarm.users.map{o -> o.email}.contains(userEmail)) {
                                 alarmManager.setExact(AlarmManager.RTC_WAKEUP, alarm.time, pendingIntent);
                             }
                             else {
-                                System.out.println("Canceled alarm")
                                 alarmManager.cancel(pendingIntent)
                             }
                     }

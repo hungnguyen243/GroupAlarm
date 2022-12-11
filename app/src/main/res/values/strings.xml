@@ -109,5 +109,6 @@
     <string name="decline">Decline</string>
     <string name="inviteAccepted">ACCEPTED invite</string>
     <string name="createAlarm">Create an Alarm</string>
-    <string name="inviteForAlarm">\"Would you like to accept the alarm for \"</string>
+    <string name="alarmOwner">Creator: %1$s</string>
+    <string name="inviteForAlarm">Would you like to accept the alarm for alarm %1$s?</string>
 </resources>

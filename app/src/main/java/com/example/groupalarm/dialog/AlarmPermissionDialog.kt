@@ -33,7 +33,7 @@ class AlarmPermissionDialog(docChange: String) : DialogFragment() {
         )
         dialogBuilder.setView(dialogViewBinding.root)
 
-        dialogBuilder.setTitle(getString(R.string.inviteForAlarm) + alarmTitles.get(thisDocChange))
+        dialogBuilder.setTitle(getString(R.string.inviteForAlarm, alarmTitles.get(thisDocChange)))
 
         dialogBuilder.setPositiveButton(getString(R.string.accept)) {
                 dialog, which ->

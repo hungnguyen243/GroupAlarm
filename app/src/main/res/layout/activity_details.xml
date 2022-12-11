@@ -41,8 +41,13 @@
         android:orientation="vertical"
         android:id="@+id/linearLayout"
         android:layout_height="wrap_content"
-        />
-
+        >
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="User List:"
+            />
+    </LinearLayout>
 
     <Button
         android:id="@+id/backBtn"
