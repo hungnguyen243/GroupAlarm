@@ -28,11 +28,18 @@ class DetailsActivity : AppCompatActivity() {
         binding.alarmTime.text = convertTimeForDisplay(intentTime)
         binding.alarmOwner.text = intentOwner.toString()
 
+
+        var userNames: ArrayList<String> = ArrayList()
         for (i in 0 until intentUserList.size) {
-            val textView = TextView(this)
-            textView.setText(intentUserList.get(i).username)
-            binding.linearLayout.addView(textView)
+            var username = intentUserList.get(i).username
+
+            if (i == intentUserList.size - 1) {
+                userNames.add(username)
+            } else {
+                userNames.add(username + ", ")
+            }
         }
+        binding.alarmUserList.text = userNames.toString().replace("[","").replace("]","")
 
 
         binding.backBtn.setOnClickListener {

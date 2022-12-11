@@ -1,14 +1,11 @@
 package com.example.groupalarm.dialog
 
-import android.app.AlarmManager
 import android.app.AlertDialog
 import android.app.Dialog
 import android.app.PendingIntent
-import android.content.Context
-import android.content.Context.ALARM_SERVICE
 import android.os.Build
 import android.os.Bundle
-import android.widget.TimePicker
+import android.view.View
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.DialogFragment
 import com.example.groupalarm.R
@@ -19,9 +16,8 @@ import com.example.groupalarm.data.User
 import com.example.groupalarm.databinding.AlarmDialogBinding
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.ktx.toObject
 import java.util.*
-import kotlin.collections.ArrayList
+
 
 class AlarmDialog: DialogFragment() {
 
@@ -35,8 +31,10 @@ class AlarmDialog: DialogFragment() {
     @RequiresApi(Build.VERSION_CODES.M)
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val dialogBuilder = AlertDialog.Builder(requireContext())
+        val customTitleView: View = layoutInflater.inflate(com.example.groupalarm.R.layout.custom_title, null)
 
 
+        dialogBuilder.setCustomTitle(customTitleView)
         dialogBuilder.setTitle(getString(R.string.createAlarm))
 
         dialogViewBinding = AlarmDialogBinding.inflate(requireActivity().layoutInflater)
