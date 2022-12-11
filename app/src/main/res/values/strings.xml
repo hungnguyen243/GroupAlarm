@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">GroupAlarm</string>
+    <string name="app_name">Group Alarm</string>
     <string name="large_text">
         "Material is the metaphor.\n\n"
 
@@ -109,6 +109,6 @@
     <string name="decline">Decline</string>
     <string name="inviteAccepted">ACCEPTED invite</string>
     <string name="createAlarm">Create an Alarm</string>
-    <string name="alarmOwner">Creator: %1$s</string>
+    <string name="alarmOwner">By: %1$s</string>
     <string name="inviteForAlarm">Would you like to accept the alarm for alarm %1$s?</string>
 </resources>
