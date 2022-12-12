@@ -33,11 +33,7 @@ class DetailsActivity : AppCompatActivity() {
         for (i in 0 until intentUserList.size) {
             var username = intentUserList.get(i).username
 
-            if (i == intentUserList.size - 1) {
-                userNames.add(username)
-            } else {
-                userNames.add(username + ", ")
-            }
+            userNames.add(username)
         }
         binding.alarmUserList.text = userNames.toString().replace("[","").replace("]","")
 

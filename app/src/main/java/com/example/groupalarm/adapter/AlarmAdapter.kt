@@ -23,6 +23,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FieldValue
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.collections.ArrayList
 
 class AlarmAdapter : RecyclerView.Adapter<AlarmAdapter.ViewHolder> {
 
@@ -142,6 +143,8 @@ class AlarmAdapter : RecyclerView.Adapter<AlarmAdapter.ViewHolder> {
                     .contains(FirebaseAuth.getInstance().currentUser!!.email!!)
             }
 
+            var alarmUsers = alarm.users.toMutableList()
+
             binding.btnToggleAlarm.setOnClickListener {
                 val pendingIntent = PendingIntent.getBroadcast(context, alarm.time.toInt(), Intent(context, AlarmReceiver::class.java), PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT)
                 if (binding.btnToggleAlarm.isChecked) {
@@ -149,6 +152,7 @@ class AlarmAdapter : RecyclerView.Adapter<AlarmAdapter.ViewHolder> {
                     currUser.addOnSuccessListener { documentSnapshot ->
                             val user = documentSnapshot.toObject(User::class.java)
                             editUserList(alarmIds.get(alarm)!!, user!!, true)
+                            alarmUsers.add(user)
                         }
                         .addOnFailureListener {
                             Toast.makeText(context, "Failed to add myself to user list of this alarm", Toast.LENGTH_LONG).show()
@@ -162,6 +166,7 @@ class AlarmAdapter : RecyclerView.Adapter<AlarmAdapter.ViewHolder> {
                         .addOnSuccessListener { documentSnapshot ->
                             val user = documentSnapshot.toObject(User::class.java)
                             editUserList(alarmIds.get(alarm)!!, user!!, false)
+                            alarmUsers.remove(user)
                         }
                         .addOnFailureListener {
                             Toast.makeText(context, "Failed to remove myself from this alarm", Toast.LENGTH_LONG).show()
@@ -205,7 +210,7 @@ class AlarmAdapter : RecyclerView.Adapter<AlarmAdapter.ViewHolder> {
 
                 val bundle = Bundle()
                 intentDetails.putExtra(
-                    "AlarmUserList", alarm.users
+                    "AlarmUserList", ArrayList(alarmUsers)
                 )
 
                 (context as ScrollingActivity).startActivity(Intent(intentDetails))

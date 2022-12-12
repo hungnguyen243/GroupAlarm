@@ -93,17 +93,23 @@ class ScrollingActivity : AppCompatActivity() {
                         val alarm = docChange.document.toObject(Alarm::class.java)
                         alarmIds[alarm] = docChange.document.id
                         alarmTitles[docChange.document.id] = alarm.title
-                        if(userEmail != alarm.owner) {
+                        if(userEmail != alarm.owner && !alarm.users.map { o -> o.email }.contains(userEmail)) {
                             // Shows a dialog asking if user wants to accept or decline
                             // a newly created alarm
                             if (Date(alarm.time) >= Calendar.getInstance().time) {
-                                val alarmPermissionDialog = AlarmPermissionDialog(docChange.document.id)
-                                alarmPermissionDialog.show(supportFragmentManager, getString(R.string.alarmDecision))
+                                val alarmPermissionDialog =
+                                    AlarmPermissionDialog(docChange.document.id)
+                                alarmPermissionDialog.show(
+                                    supportFragmentManager,
+                                    getString(R.string.alarmDecision)
+                                )
                             }
                             else {
                                 adapter.addAlarm(alarm, docChange.document.id)
                             }
                         }
+                        // either the current user is the owner, or he/she's already in user list =>
+                        // just add alarm row and set alarm
                         else {
                             adapter.addAlarm(alarm, docChange.document.id)
                             // set alarm
@@ -119,7 +125,6 @@ class ScrollingActivity : AppCompatActivity() {
                                     FLAG_IMMUTABLE or FLAG_UPDATE_CURRENT
                                 )
                                 alarmIntents.put(docChange.document.id, pendingIntent)
-                                alarmIds.put(alarm, docChange.document.id)
                                 alarmManager.setExact(
                                     AlarmManager.RTC_WAKEUP,
                                     alarm.time,
